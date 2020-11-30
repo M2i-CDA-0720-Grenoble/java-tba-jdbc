@@ -1,5 +1,6 @@
 package tba;
 
+import tba.Model.Room;
 import tba.Utils.DatabaseHandler;
 
 /**
@@ -18,7 +19,13 @@ public final class App {
         DatabaseHandler.runScript("schema.sql");
         DatabaseHandler.runScript("data.sql");
 
-        System.out.println("Hello World!");
+        // Affiche toutes les pièces présentes dans la base de données
+        for (Room room: Room.findAll()) {
+            System.out.println(room);
+        }
+
+        // Affiche uniquement la pièce n°3 de la base de données
+        System.out.println( Room.findById(3) );
     }
 
 }

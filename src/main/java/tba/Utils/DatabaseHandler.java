@@ -32,11 +32,22 @@ public class DatabaseHandler
         return statement.execute(sql);
     }
 
+    public static ResultSet query(String sql) throws SQLException
+    {
+        Statement statement = getInstance().connection.createStatement();
+        return statement.executeQuery(sql);
+    }
+
     public static void runScript(String filename) throws SQLException, FileNotFoundException
     {
         ScriptRunner scriptRunner = new ScriptRunner(getInstance().connection);
         Reader reader = new BufferedReader( new FileReader(filename) );
         scriptRunner.runScript(reader);
+    }
+
+    public Connection getConnection()
+    {
+        return connection;
     }
 
 }
