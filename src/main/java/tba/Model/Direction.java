@@ -12,6 +12,13 @@ public class Direction {
     private String name;
     private String command;
 
+    public Direction()
+    {
+        id = 0;
+        name = "";
+        command = "";
+    }
+
     public Direction(int id, String name, String command)
     {
         this.id = id;
@@ -77,6 +84,62 @@ public class Direction {
             exception.printStackTrace();
             System.exit(1);
             return null;
+        }
+    }
+
+    public void save()
+    {
+        if (id == 0) {
+            insert();
+        } else {
+            update();
+        }
+    }
+
+    private void insert()
+    {
+        try {
+            PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("INSERT INTO `direction` (`name`, `command`) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, name);
+            statement.setString(2, command);
+            statement.executeUpdate();
+            ResultSet set = statement.getGeneratedKeys();
+            if (set.first()) {
+                id = set.getInt(1);
+                return;
+            }
+        }
+        catch (SQLException exception) {
+            exception.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    private void update()
+    {
+        try {
+            PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("UPDATE `direction` SET `name` = ?, `command` = ? WHERE `id` = ?");
+            statement.setString(1, name);
+            statement.setString(2, command);
+            statement.setInt(3, id);
+            statement.executeUpdate();
+        }
+        catch (SQLException exception) {
+            exception.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public void delete()
+    {
+        try {
+            PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("DELETE FROM `direction` WHERE `id` = ?");
+            statement.setInt(1, id);
+            statement.executeUpdate();
+        }
+        catch (SQLException exception) {
+            exception.printStackTrace();
+            System.exit(1);
         }
     }
 
