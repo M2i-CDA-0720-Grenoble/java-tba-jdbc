@@ -22,41 +22,55 @@ public class RoomTransition {
         this.directionId = directionId;
     }
 
-    public static List<RoomTransition> findAllFromRoom(Room room) throws SQLException
+    public static List<RoomTransition> findAllFromRoom(Room room)
     {
-        PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("SELECT * FROM `room_transition` WHERE `from_room_id` = ?");
-        statement.setInt(1, room.getId());
-        ResultSet set = statement.executeQuery();
+        try {
+            PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("SELECT * FROM `room_transition` WHERE `from_room_id` = ?");
+            statement.setInt(1, room.getId());
+            ResultSet set = statement.executeQuery();
+    
+            List<RoomTransition> transitions = new ArrayList<>();
+            while (set.next()) {
+                transitions.add(
+                    new RoomTransition(
+                        set.getInt("id"),
+                        set.getInt("from_room_id"),
+                        set.getInt("to_room_id"),
+                        set.getInt("direction_id")
+                    )
+                );
+            }
+            return transitions;
+        }
+        catch (SQLException exception) {
+            exception.printStackTrace();
+            System.exit(1);
+            return null;
+        }
+    }
 
-        List<RoomTransition> transitions = new ArrayList<>();
-        while (set.next()) {
-            transitions.add(
-                new RoomTransition(
+    public static RoomTransition findByFromRoomAndDirection(Room room, Direction direction)
+    {
+        try {
+            PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("SELECT * FROM `room_transition` WHERE `from_room_id` = ? AND `direction_id` = ?");
+            statement.setInt(1, room.getId());
+            statement.setInt(2, direction.getId());
+            ResultSet set = statement.executeQuery();
+    
+            if (set.first()) {
+                return new RoomTransition(
                     set.getInt("id"),
                     set.getInt("from_room_id"),
                     set.getInt("to_room_id"),
                     set.getInt("direction_id")
-                )
-            );
+                );
+            } else {
+                return null;
+            }
         }
-        return transitions;
-    }
-
-    public static RoomTransition findByFromRoomAndDirection(Room room, Direction direction) throws SQLException
-    {
-        PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("SELECT * FROM `room_transition` WHERE `from_room_id` = ? AND `direction_id` = ?");
-        statement.setInt(1, room.getId());
-        statement.setInt(2, direction.getId());
-        ResultSet set = statement.executeQuery();
-
-        if (set.first()) {
-            return new RoomTransition(
-                set.getInt("id"),
-                set.getInt("from_room_id"),
-                set.getInt("to_room_id"),
-                set.getInt("direction_id")
-            );
-        } else {
+        catch (SQLException exception) {
+            exception.printStackTrace();
+            System.exit(1);
             return null;
         }
     }
@@ -73,22 +87,12 @@ public class RoomTransition {
 
     public Room getFromRoom()
     {
-        try {
-            return Room.findById(fromRoomId);
-        }
-        catch (SQLException exception) {
-            return null;
-        }
+        return Room.findById(fromRoomId);
     }
 
     public Room getToRoom()
     {
-        try {
-            return Room.findById(toRoomId);
-        }
-        catch (SQLException exception) {
-            return null;
-        }
+        return Room.findById(toRoomId);
     }
 
     public RoomTransition setFromRoom(Room room)
@@ -105,12 +109,7 @@ public class RoomTransition {
 
     public Direction getDirection()
     {
-        try {
-            return Direction.findById(directionId);
-        }
-        catch (SQLException exception) {
-            return null;
-        }
+        return Direction.findById(directionId);
     }
 
     public RoomTransition setDirection(Direction direction)

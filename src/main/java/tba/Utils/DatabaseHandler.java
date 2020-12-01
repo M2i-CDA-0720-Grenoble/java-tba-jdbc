@@ -12,12 +12,18 @@ public class DatabaseHandler
 
     private Connection connection;
     
-    private DatabaseHandler() throws SQLException
+    private DatabaseHandler()
     {
-        connection = DriverManager.getConnection("jdbc:mariadb://localhost:3306/java_tba", "root", "root");
+        try {
+            connection = DriverManager.getConnection("jdbc:mariadb://localhost:3306/java_tba", "root", "root");
+        }
+        catch (SQLException exception) {
+            exception.printStackTrace();
+            System.exit(1);
+        }
     }
 
-    public static DatabaseHandler getInstance() throws SQLException
+    public static DatabaseHandler getInstance()
     {
         if (instance == null) {
             instance = new DatabaseHandler();
@@ -26,16 +32,30 @@ public class DatabaseHandler
         return instance;
     }
 
-    public static boolean execute(String sql) throws SQLException
+    public static boolean execute(String sql)
     {
-        Statement statement = getInstance().connection.createStatement();
-        return statement.execute(sql);
+        try {
+            Statement statement = getInstance().connection.createStatement();
+            return statement.execute(sql);
+        }
+        catch (SQLException exception) {
+            exception.printStackTrace();
+            System.exit(1);
+            return false;
+        }
     }
 
-    public static ResultSet query(String sql) throws SQLException
+    public static ResultSet query(String sql)
     {
-        Statement statement = getInstance().connection.createStatement();
-        return statement.executeQuery(sql);
+        try {
+            Statement statement = getInstance().connection.createStatement();
+            return statement.executeQuery(sql);
+        }
+        catch (SQLException exception) {
+            exception.printStackTrace();
+            System.exit(1);
+            return null;
+        }
     }
 
     public static void runScript(String filename) throws SQLException, FileNotFoundException

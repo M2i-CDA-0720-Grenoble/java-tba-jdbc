@@ -1,6 +1,5 @@
 package tba.Game;
 
-import java.sql.SQLException;
 import java.util.Date;
 
 import tba.Model.Room;
@@ -35,12 +34,7 @@ public class GameState {
 
     public Room getCurrentRoom()
     {
-        try {
-            return Room.findById(currentRoomId);
-        }
-        catch (SQLException exception) {
-            return null;
-        }
+        return Room.findById(currentRoomId);
     }
 
     public GameState setCurrentRoom(Room room)
