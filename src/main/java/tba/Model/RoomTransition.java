@@ -22,6 +22,30 @@ public class RoomTransition {
         this.directionId = directionId;
     }
 
+    public static List<RoomTransition> findAll()
+    {
+        try {
+            List<RoomTransition> transitions = new ArrayList<>();
+            ResultSet set = DatabaseHandler.query("SELECT * FROM `room_transition`");
+            while (set.next()) {
+                transitions.add(
+                    new RoomTransition(
+                        set.getInt("id"),
+                        set.getInt("from_room_id"),
+                        set.getInt("to_room_id"),
+                        set.getInt("direction_id")
+                    )
+                );
+            }
+            return transitions;
+        }
+        catch (SQLException exception) {
+            exception.printStackTrace();
+            System.exit(1);
+            return null;
+        }
+    }
+
     public static List<RoomTransition> findAllFromRoom(Room room)
     {
         try {
