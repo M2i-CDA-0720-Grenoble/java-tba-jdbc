@@ -21,9 +21,6 @@ public final class App {
      * @param args The arguments of the program.
      */
     public static void main(String[] args) throws Exception {
-        DatabaseHandler.runScript("schema.sql");
-        DatabaseHandler.runScript("data.sql");
-
         Game game = new Game();
 
         while (game.isRunning()) {
