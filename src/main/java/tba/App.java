@@ -1,6 +1,10 @@
 package tba;
 
+import java.util.List;
+
+import tba.Model.Direction;
 import tba.Model.Room;
+import tba.Model.RoomTransition;
 import tba.Utils.DatabaseHandler;
 
 /**
@@ -19,13 +23,21 @@ public final class App {
         DatabaseHandler.runScript("schema.sql");
         DatabaseHandler.runScript("data.sql");
 
-        // Affiche toutes les pièces présentes dans la base de données
-        for (Room room: Room.findAll()) {
-            System.out.println(room);
-        }
+        // Récupèré une pièce
+        Room room = Room.findById(1);
+        System.out.println(room);
+        System.out.println("");
 
-        // Affiche uniquement la pièce n°3 de la base de données
-        System.out.println( Room.findById(3) );
+        // Récupère une direction
+        Direction direction = Direction.findById(4);
+        System.out.println(direction);
+        System.out.println("");
+
+        // Récupère la transition qui part de cette pièce, et qui va dans cette direction,
+        // et affiche la pièce vers laquelle pointe cette transition
+        RoomTransition transition = RoomTransition.findByFromRoomAndDirection(room, direction);
+        System.out.println(transition.getToRoom());
+        System.out.println("");
     }
 
 }
