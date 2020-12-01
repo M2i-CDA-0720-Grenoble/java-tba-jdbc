@@ -2,6 +2,7 @@ package tba;
 
 import java.util.List;
 
+import tba.Game.Game;
 import tba.Model.Direction;
 import tba.Model.Room;
 import tba.Model.RoomTransition;
@@ -23,21 +24,11 @@ public final class App {
         DatabaseHandler.runScript("schema.sql");
         DatabaseHandler.runScript("data.sql");
 
-        // Récupèré une pièce
-        Room room = Room.findById(1);
-        System.out.println(room);
-        System.out.println("");
+        Game game = new Game();
 
-        // Récupère une direction
-        Direction direction = Direction.findById(4);
-        System.out.println(direction);
-        System.out.println("");
-
-        // Récupère la transition qui part de cette pièce, et qui va dans cette direction,
-        // et affiche la pièce vers laquelle pointe cette transition
-        RoomTransition transition = RoomTransition.findByFromRoomAndDirection(room, direction);
-        System.out.println(transition.getToRoom());
-        System.out.println("");
+        while (game.isRunning()) {
+            game.update();
+        }
     }
 
 }
