@@ -1,6 +1,5 @@
 package tba.Game;
 
-import java.io.Console;
 import java.sql.SQLException;
 import java.util.Scanner;
 
