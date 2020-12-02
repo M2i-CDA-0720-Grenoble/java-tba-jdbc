@@ -1,13 +1,11 @@
 package tba.Model;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import tba.Utils.DatabaseHandler;
 
-public class Direction extends AbstractModel {
+public class Direction extends AbstractModel<Direction> {
     
     private String name;
     private String command;
@@ -39,65 +37,25 @@ public class Direction extends AbstractModel {
         }};
     }
 
+    protected Direction instantiateFromResultSet(ResultSet set) throws SQLException
+    {
+        return new Direction(
+            set.getInt("id"),
+            set.getString("name"),
+            set.getString("command")
+        );
+    }
+
     public static List<Direction> findAll()
     {
-        try {
-            List<Direction> directions = new ArrayList<>();
-            // Envoie une requête en base de données et récupère les résultats
-            ResultSet set = DatabaseHandler.query("SELECT * FROM `direction`");
-            // Tant qu'il reste des résultats non traités, prend le résultat suivant...
-            while (set.next()) {
-                // ... et crée un objet à partir des colonnes présentes dans ce résultat
-                Direction direction = new Direction(
-                    set.getInt("id"),
-                    set.getString("name"),
-                    set.getString("command")
-                );
-                // Ajoute l'objet à la liste
-                directions.add(direction);
-            }
-            // Renvoie la liste
-            return directions;
-        }
-        catch (SQLException exception) {
-            exception.printStackTrace();
-            System.exit(1);
-            return null;
-        }
+        Direction direction = new Direction();
+        return direction.findAllGeneric();
     }
 
     public static Direction findById(int id)
     {
-        try {
-            // Envoie une requête en base de données
-            DatabaseHandler dbHandler = DatabaseHandler.getInstance();
-            PreparedStatement statement = dbHandler.getConnection().prepareStatement("SELECT * FROM `direction` WHERE `id` = ?"
-                // Rajouter ces deux lignes si on rencontre une erreur de type "Operation not allowed for a result set of type ResultSet.TYPE_FORWARD_ONLY"
-                // ,ResultSet.TYPE_SCROLL_SENSITIVE
-                // ,ResultSet.CONCUR_UPDATABLE
-            );
-            statement.setInt(1, id);
-            ResultSet set = statement.executeQuery();
-    
-            // Comme on sait que la requête peut uniquement renvoyer un seul résultat (s'il existe),
-            // ou aucun (s'il n'existe pas), cherche le premier résultat de la requête...
-            if (set.first()) {
-                // ...et renvoie un nouvel objet à partir de ses données
-                return new Direction(
-                    set.getInt("id"),
-                    set.getString("name"),
-                    set.getString("command")
-                );
-            // Si la requête ne renvoie aucun résultat, renvoie null
-            } else {
-                return null;
-            }
-        }
-        catch (SQLException exception) {
-            exception.printStackTrace();
-            System.exit(1);
-            return null;
-        }
+        Direction direction = new Direction();
+        return direction.findByIdGeneric(id);
     }
 
     @Override

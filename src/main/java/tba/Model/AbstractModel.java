@@ -1,28 +1,95 @@
 package tba.Model;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import tba.Utils.DatabaseHandler;
 
-abstract public class AbstractModel {
+abstract public class AbstractModel<T> {
 
     protected int id;
 
+
+    protected List<T> findAllGeneric()
+    {
+        try {
+            // Crée une liste prête à accueillir les objets qui vont être créés à partir des données récupérées
+            List<T> result = new ArrayList<>();
+            // Envoie une requête en base de données et récupère les résultats
+            ResultSet set = DatabaseHandler.query("SELECT * FROM `" + getTableName() + "`");
+            // Tant qu'il reste des résultats non traités, prend le résultat suivant...
+            while (set.next()) {
+                // ... et crée un objet à partir des colonnes présentes dans ce résultat
+                T object = instantiateFromResultSet(set);
+                // Ajoute l'objet à la liste
+                result.add(object);
+            }
+            // Renvoie la liste
+            return result;
+        }
+        catch (SQLException exception) {
+            System.out.println(exception);
+            System.exit(1);
+            return null;
+        }
+    }
+
+
+    public T findByIdGeneric(int id)
+    {
+        try {
+            // Envoie une requête en base de données
+            DatabaseHandler dbHandler = DatabaseHandler.getInstance();
+            PreparedStatement statement = dbHandler.getConnection().prepareStatement("SELECT * FROM `" + getTableName() + "` WHERE `id` = ?"
+                // Rajouter ces deux lignes si on rencontre une erreur de type "Operation not allowed for a result set of type ResultSet.TYPE_FORWARD_ONLY"
+                // ,ResultSet.TYPE_SCROLL_SENSITIVE
+                // ,ResultSet.CONCUR_UPDATABLE
+            );
+            statement.setInt(1, id);
+            ResultSet set = statement.executeQuery();
+    
+            // Comme on sait que la requête peut uniquement renvoyer un seul résultat (s'il existe),
+            // ou aucun (s'il n'existe pas), cherche le premier résultat de la requête...
+            if (set.first()) {
+                // ...et renvoie un nouvel objet à partir de ses données
+                return instantiateFromResultSet(set);
+            // Si la requête ne renvoie aucun résultat, renvoie null
+            } else {
+                return null;
+            }
+        }
+        catch (SQLException exception) {
+            exception.printStackTrace();
+            System.exit(1);
+            return null;
+        }
+    }
+
+
+    /**
+     * Update matching database record based on this object's properties
+     */
     public void save()
     {
         // Si l'objet n'existe pas encore en BDD
         if (id == 0) {
             // Crée un enregistrement à partir des propriétés de l'objet
             insert();
-        // SInon
+        // Sinon
         } else {
             // Modifie l'enregistrement déjà existant à partir des propriétés de l'objet
             update();
         }
     }
 
+
+    /**
+     * Create new record in database based on this object's properties
+     * @see AbstractModel#save()
+     */
     protected void insert()
     {
         try {
@@ -72,6 +139,11 @@ abstract public class AbstractModel {
         }
     }
 
+
+    /**
+     * Update macthing existing record in database based on this object's properties
+     * @see AbstractModel#save()
+     */
     protected void update()
     {
         try {
@@ -111,6 +183,10 @@ abstract public class AbstractModel {
         }
     }
 
+
+    /**
+     * Delete matching record from database
+     */
     public void delete()
     {
         try {
@@ -125,8 +201,16 @@ abstract public class AbstractModel {
         }
     }
 
+
+    /**
+     * Specify table name associated with this entity
+     */
     abstract protected String getTableName();
 
+    /**
+     * Pack object properties as a collection of { columnName => value }
+     */
     abstract protected HashMap<String, String> getProperties();
 
+    abstract protected T instantiateFromResultSet(ResultSet set) throws SQLException;
 }
