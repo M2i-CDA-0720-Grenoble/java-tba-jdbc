@@ -1,18 +1,15 @@
 package tba.Model;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import tba.Utils.DatabaseHandler;
 
-public class Room
+public class Room extends AbstractModel
 {
 
-    private int id;
     private String name;
     private String description;
 
@@ -28,6 +25,19 @@ public class Room
         this.id = id;
         this.name = name;
         this.description = description;
+    }
+
+    protected String getTableName()
+    {
+        return "room";
+    }
+
+    protected HashMap<String, String> getProperties()
+    {
+        return new HashMap<String, String>() {{
+            put("name", name);
+            put("description", description);
+        }};
     }
 
     public static List<Room> findAll()
@@ -89,63 +99,6 @@ public class Room
             exception.printStackTrace();
             System.exit(1);
             return null;
-        }
-    }
-
-    public void save()
-    {
-        if (id == 0) {
-            insert();
-        } else {
-            update();
-        }
-    }
-
-    private void insert()
-    {
-        try {
-            PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("INSERT INTO `room` (`name`, `description`) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, name);
-            statement.setString(2, description);
-            statement.executeUpdate();
-            ResultSet set = statement.getGeneratedKeys();
-            if (set.first()) {
-                id = set.getInt(1);
-                return;
-            }
-        }
-        catch (SQLException exception) {
-            exception.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    private void update()
-    {
-        try {
-            PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("UPDATE `room` SET `name` = ?, `description` = ? WHERE `id` = ?");
-            statement.setString(1, name);
-            statement.setString(2, description);
-            statement.setInt(3, id);
-            statement.executeUpdate();
-        }
-        catch (SQLException exception) {
-            exception.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    public void delete()
-    {
-        try {
-            PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("DELETE FROM `room` WHERE `id` = ?");
-            statement.setInt(1, id);
-            statement.executeUpdate();
-            id = 0;
-        }
-        catch (SQLException exception) {
-            exception.printStackTrace();
-            System.exit(1);
         }
     }
 

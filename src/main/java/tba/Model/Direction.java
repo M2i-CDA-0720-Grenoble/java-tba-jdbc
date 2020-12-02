@@ -2,13 +2,13 @@ package tba.Model;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import tba.Utils.DatabaseHandler;
 
-public class Direction {
+public class Direction extends AbstractModel {
     
-    private int id;
     private String name;
     private String command;
 
@@ -24,6 +24,19 @@ public class Direction {
         this.id = id;
         this.name = name;
         this.command = command;
+    }
+
+    protected String getTableName()
+    {
+        return "direction";
+    }
+
+    protected HashMap<String, String> getProperties()
+    {
+        return new HashMap<String, String>() {{
+            put("name", name);
+            put("command", command);
+        }};
     }
 
     public static List<Direction> findAll()
@@ -84,63 +97,6 @@ public class Direction {
             exception.printStackTrace();
             System.exit(1);
             return null;
-        }
-    }
-
-    public void save()
-    {
-        if (id == 0) {
-            insert();
-        } else {
-            update();
-        }
-    }
-
-    private void insert()
-    {
-        try {
-            PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("INSERT INTO `direction` (`name`, `command`) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, name);
-            statement.setString(2, command);
-            statement.executeUpdate();
-            ResultSet set = statement.getGeneratedKeys();
-            if (set.first()) {
-                id = set.getInt(1);
-                return;
-            }
-        }
-        catch (SQLException exception) {
-            exception.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    private void update()
-    {
-        try {
-            PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("UPDATE `direction` SET `name` = ?, `command` = ? WHERE `id` = ?");
-            statement.setString(1, name);
-            statement.setString(2, command);
-            statement.setInt(3, id);
-            statement.executeUpdate();
-        }
-        catch (SQLException exception) {
-            exception.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    public void delete()
-    {
-        try {
-            PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("DELETE FROM `direction` WHERE `id` = ?");
-            statement.setInt(1, id);
-            statement.executeUpdate();
-            id = 0;
-        }
-        catch (SQLException exception) {
-            exception.printStackTrace();
-            System.exit(1);
         }
     }
 
