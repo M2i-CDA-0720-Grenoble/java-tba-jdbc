@@ -136,6 +136,7 @@ public class Direction {
             PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("DELETE FROM `direction` WHERE `id` = ?");
             statement.setInt(1, id);
             statement.executeUpdate();
+            id = 0;
         }
         catch (SQLException exception) {
             exception.printStackTrace();

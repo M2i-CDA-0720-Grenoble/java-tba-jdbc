@@ -1,7 +1,5 @@
 package tba.Editor.EditorMode;
 
-import java.sql.SQLIntegrityConstraintViolationException;
-
 import tba.Editor.Editor;
 import tba.Model.Direction;
 import tba.Utils.Console;
