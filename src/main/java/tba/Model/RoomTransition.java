@@ -1,19 +1,23 @@
 package tba.Model;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import tba.Utils.DatabaseHandler;
-
-public class RoomTransition {
+public class RoomTransition extends AbstractModel<RoomTransition> {
     
-    private int id;
     private int fromRoomId;
     private int toRoomId;
     private int directionId;
+
+    public RoomTransition()
+    {
+        id = 0;
+        fromRoomId = 0;
+        toRoomId = 0;
+        directionId = 0;
+    }
 
     public RoomTransition(int id, int fromRoomId, int toRoomId, int directionId) {
         this.id = id;
@@ -22,80 +26,58 @@ public class RoomTransition {
         this.directionId = directionId;
     }
 
-    public static List<RoomTransition> findAll()
+    @Override
+    protected String getTableName()
     {
-        try {
-            List<RoomTransition> transitions = new ArrayList<>();
-            ResultSet set = DatabaseHandler.query("SELECT * FROM `room_transition`");
-            while (set.next()) {
-                transitions.add(
-                    new RoomTransition(
-                        set.getInt("id"),
-                        set.getInt("from_room_id"),
-                        set.getInt("to_room_id"),
-                        set.getInt("direction_id")
-                    )
-                );
-            }
-            return transitions;
-        }
-        catch (SQLException exception) {
-            exception.printStackTrace();
-            System.exit(1);
-            return null;
-        }
+        return "room_transition";
+    }
+
+    @Override
+    protected HashMap<String, String> getProperties() {
+        return new HashMap<String, String>() {{
+            put("from_room_id", Integer.toString(fromRoomId));
+            put("to_room_id", Integer.toString(toRoomId));
+            put("direction_id", Integer.toString(directionId));
+        }};
+    }
+
+    @Override
+    protected RoomTransition instantiateFromResultSet(ResultSet set) throws SQLException
+    {
+        return new RoomTransition(
+            set.getInt("id"),
+            set.getInt("from_room_id"),
+            set.getInt("to_room_id"),
+            set.getInt("direction_id")
+        );
+    }
+
+    public static RoomTransition findById(int id)
+    {
+        RoomTransition transition = new RoomTransition();
+        return transition.findByIdGeneric(id);
     }
 
     public static List<RoomTransition> findAllFromRoom(Room room)
     {
-        try {
-            PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("SELECT * FROM `room_transition` WHERE `from_room_id` = ?");
-            statement.setInt(1, room.getId());
-            ResultSet set = statement.executeQuery();
-    
-            List<RoomTransition> transitions = new ArrayList<>();
-            while (set.next()) {
-                transitions.add(
-                    new RoomTransition(
-                        set.getInt("id"),
-                        set.getInt("from_room_id"),
-                        set.getInt("to_room_id"),
-                        set.getInt("direction_id")
-                    )
-                );
-            }
-            return transitions;
-        }
-        catch (SQLException exception) {
-            exception.printStackTrace();
-            System.exit(1);
-            return null;
-        }
+        RoomTransition transition = new RoomTransition();
+        return transition.findByCriteria(new HashMap<String, String>() {{
+            put("from_room_id", Integer.toString( room.getId() ));
+        }});
     }
 
     public static RoomTransition findByFromRoomAndDirection(Room room, Direction direction)
     {
-        try {
-            PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement("SELECT * FROM `room_transition` WHERE `from_room_id` = ? AND `direction_id` = ?");
-            statement.setInt(1, room.getId());
-            statement.setInt(2, direction.getId());
-            ResultSet set = statement.executeQuery();
-    
-            if (set.first()) {
-                return new RoomTransition(
-                    set.getInt("id"),
-                    set.getInt("from_room_id"),
-                    set.getInt("to_room_id"),
-                    set.getInt("direction_id")
-                );
-            } else {
-                return null;
-            }
-        }
-        catch (SQLException exception) {
-            exception.printStackTrace();
-            System.exit(1);
+        RoomTransition transition = new RoomTransition();
+        List<RoomTransition> transitions = transition.findByCriteria(new HashMap<String, String>() {{
+            put("from_room_id", Integer.toString( room.getId() ));
+            put("direction_id", Integer.toString( direction.getId() ));
+        }});
+
+        if (transitions.size() == 0) {
             return null;
+        } else {
+            return transitions.get(0);
         }
     }
 

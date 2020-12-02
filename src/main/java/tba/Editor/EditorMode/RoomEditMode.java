@@ -52,6 +52,8 @@ public class RoomEditMode extends EditorMode {
         }
 
         room.save();
+
+        editor.setMode( new RoomTransitionEditMode(editor, room) );
     }
     
 }

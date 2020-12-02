@@ -69,6 +69,54 @@ abstract public class AbstractModel<T> {
     }
 
 
+    protected List<T> findByCriteria(HashMap<String, String> criteria)
+    {
+        try {
+            // Crée une liste prête à accueillir les objets qui vont être créés à partir des données récupérées
+            List<T> result = new ArrayList<>();
+            // Récupère l'ensemble des noms de colonnes
+            String[] columnNames = new String[ criteria.size() ];
+            columnNames = criteria.keySet().toArray(columnNames);
+
+            String[] criteriaToInsert = new String[ criteria.size() ];
+
+            for (int i = 0; i < criteria.size(); i++) {
+                criteriaToInsert[i] = "`" + columnNames[i] + "` = ?";
+            }
+
+            // Construit la requête SQL...
+            String sql =
+                // ...avec la clause SELECT FROM et le nom de la table...
+                "SELECT * FROM `" + getTableName() + "` WHERE "
+                // ...la liste des colonnes à insérer, séparées par une virgule...
+                + String.join(" AND ", criteriaToInsert);
+    
+            // Crée la requête SQL à partir de le chaîne constituée précédemment
+            PreparedStatement statement = DatabaseHandler.getInstance().getConnection().prepareStatement(sql);
+            // Remplit les champs variables avec les différentes valeurs des propriétés
+            for (int i = 0; i < criteria.size(); i += 1) {
+                statement.setString(i + 1, criteria.get( columnNames[i] ) );
+            }
+
+            ResultSet set = statement.executeQuery();
+            // Tant qu'il reste des résultats non traités, prend le résultat suivant...
+            while (set.next()) {
+                // ... et crée un objet à partir des colonnes présentes dans ce résultat
+                T object = instantiateFromResultSet(set);
+                // Ajoute l'objet à la liste
+                result.add(object);
+            }
+            // Renvoie la liste
+            return result;
+        }
+        catch (SQLException exception) {
+            System.out.println(exception);
+            System.exit(1);
+            return null;
+        }
+    }
+
+
     /**
      * Update matching database record based on this object's properties
      */
