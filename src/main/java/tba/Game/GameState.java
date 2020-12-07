@@ -2,7 +2,8 @@ package tba.Game;
 
 import java.util.Date;
 
-import tba.Model.Room;
+import tba.Entity.Room;
+import tba.Repository.RoomRepository;
 
 public class GameState {
     
@@ -34,7 +35,8 @@ public class GameState {
 
     public Room getCurrentRoom()
     {
-        return Room.findById(currentRoomId);
+        RoomRepository repository = new RoomRepository();
+        return repository.findById(currentRoomId);
     }
 
     public GameState setCurrentRoom(Room room)

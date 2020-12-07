@@ -1,11 +1,9 @@
-package tba.Model;
+package tba.Entity;
 
-import java.sql.*;
 import java.util.HashMap;
-import java.util.List;
 
 
-public class Direction extends AbstractModel<Direction> {
+public class Direction extends Entity {
     
     private String name;
     private String command;
@@ -24,38 +22,12 @@ public class Direction extends AbstractModel<Direction> {
         this.command = command;
     }
 
-    protected String getTableName()
-    {
-        return "direction";
-    }
-
-    protected HashMap<String, String> getProperties()
+    public HashMap<String, String> getProperties()
     {
         return new HashMap<String, String>() {{
             put("name", name);
             put("command", command);
         }};
-    }
-
-    protected Direction instantiateFromResultSet(ResultSet set) throws SQLException
-    {
-        return new Direction(
-            set.getInt("id"),
-            set.getString("name"),
-            set.getString("command")
-        );
-    }
-
-    public static List<Direction> findAll()
-    {
-        Direction direction = new Direction();
-        return direction.findAllGeneric();
-    }
-
-    public static Direction findById(int id)
-    {
-        Direction direction = new Direction();
-        return direction.findByIdGeneric(id);
     }
 
     @Override

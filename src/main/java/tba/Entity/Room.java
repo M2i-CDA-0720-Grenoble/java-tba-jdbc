@@ -1,11 +1,9 @@
-package tba.Model;
+package tba.Entity;
 
-import java.sql.*;
 import java.util.HashMap;
-import java.util.List;
 
 
-public class Room extends AbstractModel<Room>
+public class Room extends Entity
 {
 
     private String name;
@@ -25,38 +23,12 @@ public class Room extends AbstractModel<Room>
         this.description = description;
     }
 
-    protected String getTableName()
-    {
-        return "room";
-    }
-
-    protected HashMap<String, String> getProperties()
+    public HashMap<String, String> getProperties()
     {
         return new HashMap<String, String>() {{
             put("name", name);
             put("description", description);
         }};
-    }
-
-    protected Room instantiateFromResultSet(ResultSet set) throws SQLException
-    {
-        return new Room(
-            set.getInt("id"),
-            set.getString("name"),
-            set.getString("description")
-        );
-    }
-
-    public static List<Room> findAll()
-    {
-        Room room = new Room();
-        return room.findAllGeneric();
-    }
-
-    public static Room findById(int id)
-    {
-        Room room = new Room();
-        return room.findByIdGeneric(id);
     }
 
     @Override

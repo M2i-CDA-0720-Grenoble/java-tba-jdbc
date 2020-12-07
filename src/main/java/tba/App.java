@@ -1,7 +1,6 @@
 package tba;
 
 import tba.Game.Game;
-
 /**
  * Hello world!
  */

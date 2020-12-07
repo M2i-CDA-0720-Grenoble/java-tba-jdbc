@@ -3,9 +3,11 @@ package tba.Game;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-import tba.Model.Direction;
-import tba.Model.Room;
-import tba.Model.RoomTransition;
+import tba.Entity.Direction;
+import tba.Entity.Room;
+import tba.Entity.RoomTransition;
+import tba.Repository.DirectionRepository;
+import tba.Repository.RoomTransitionRepository;
 import tba.Utils.ConsoleColor;
 
 public class Game {
@@ -40,7 +42,9 @@ public class Game {
         System.out.println(ConsoleColor.CYAN + "You are in the " + currentRoom.getName() + ".\n" + ConsoleColor.RESET);
         System.out.println(ConsoleColor.CYAN + currentRoom.getDescription() + ConsoleColor.RESET);
 
-        for (RoomTransition transition: RoomTransition.findAllFromRoom(currentRoom)) {
+        RoomTransitionRepository transitionRepository = new RoomTransitionRepository();
+
+        for (RoomTransition transition: transitionRepository.findAllFromRoom(currentRoom)) {
             System.out.println(ConsoleColor.GREEN + transition.getDirection().getName() + " is the " + transition.getToRoom().getName() + "." + ConsoleColor.RESET);
         }
 
@@ -49,13 +53,15 @@ public class Game {
         System.out.print("> ");
         String userInput = scanner.nextLine().trim().toLowerCase();
 
+        DirectionRepository directionRepository = new DirectionRepository();
+
         // Cherche si la saisie de l'utilisateur correspond à une commande de direction
-        for (Direction direction: Direction.findAll()) {
+        for (Direction direction: directionRepository.findAll()) {
             // Si la direction saisie par l'utilisateur existe
             if (userInput.equals(direction.getCommand())) {
 
                 // Récupère la transition qui part de la pièce actuelle dans la direction demandée
-                RoomTransition transition = RoomTransition.findByFromRoomAndDirection(currentRoom, direction);
+                RoomTransition transition = transitionRepository.findByFromRoomAndDirection(currentRoom, direction);
 
                 // S'il n'existe pas de transition partant de la pièce actuelle dans la direction
                 if (transition == null) {

@@ -1,7 +1,8 @@
 package tba.Editor.EditorMode;
 
 import tba.Editor.Editor;
-import tba.Model.Direction;
+import tba.Entity.Direction;
+import tba.Repository.DirectionRepository;
 import tba.Utils.Console;
 import tba.Utils.ConsoleColor;
 
@@ -14,8 +15,10 @@ public class DirectionEditMode extends EditorMode {
     
     @Override
     public void display() {
+        DirectionRepository repository = new DirectionRepository();
+
         Console.colorPrint("Edit directions\n", ConsoleColor.MAGENTA);
-        for (Direction direction: Direction.findAll()) {
+        for (Direction direction: repository.findAll()) {
             Console.printChoice(direction.getId(), direction.getName());
         }
         Console.printChoice(0, "Add new direction...");
@@ -23,6 +26,8 @@ public class DirectionEditMode extends EditorMode {
 
     @Override
     public void interpret(int choice) {
+
+        DirectionRepository repository = new DirectionRepository();
         // Si l'utilisateur a choisi d'ajouter une direction
         Direction direction;
         if (choice == 0) {
@@ -32,14 +37,15 @@ public class DirectionEditMode extends EditorMode {
         // Sinon, si l'utilisateur a choisi une direction déjà existante
         } else {
             // Récupère la direction choisie en BDD
-            direction = Direction.findById(choice);
+
+            direction = repository.findById(choice);
             Console.colorPrint("Editing '" + direction.getName() + "'", ConsoleColor.MAGENTA);
 
             // Propose de supprimer la direction choisie
             Console.colorPrint("Do you want to delete '" + direction.getName() + "'? (type YES to delete)", ConsoleColor.YELLOW);
             String input = Console.input().toUpperCase();
             if ("YES".equals(input)) {
-                direction.delete();
+                repository.delete(direction);
                 return;
             }    
         }
@@ -57,6 +63,6 @@ public class DirectionEditMode extends EditorMode {
         }
 
         // Demande à la direction d'aller sauvegarder son état actuel en BDD
-        direction.save();
+        repository.save(direction);
     }
 }
