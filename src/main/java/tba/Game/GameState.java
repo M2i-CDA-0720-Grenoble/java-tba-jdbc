@@ -1,7 +1,7 @@
 package tba.Game;
 
 import java.io.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import tba.Entity.Room;
 import tba.Repository.RoomRepository;
@@ -13,7 +13,7 @@ public class GameState implements Serializable {
     public static final String folderName = "savegame";
     
     private String name;
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     private int currentRoomId;
 
@@ -73,11 +73,11 @@ public class GameState implements Serializable {
         this.name = name;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 

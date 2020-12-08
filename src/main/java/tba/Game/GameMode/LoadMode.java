@@ -1,6 +1,7 @@
 package tba.Game.GameMode;
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
 
 import tba.Game.Game;
 import tba.Game.GameState;
@@ -16,7 +17,10 @@ public class LoadMode extends GameMode {
     {
         File[] files = getSavegames();
         for (int i = 0; i < files.length; i++) {
-            System.out.println("[" + i + "] " + files[i].getName());
+            GameState state = GameState.load( files[i].getName() );
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"); 
+
+            System.out.println("[" + i + "] \"" + state.getName() + "\"  saved on " + dtf.format(state.getCreatedAt()) );
         }
     }
 

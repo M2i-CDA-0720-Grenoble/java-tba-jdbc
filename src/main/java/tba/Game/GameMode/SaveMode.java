@@ -1,6 +1,10 @@
 package tba.Game.GameMode;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 import tba.Game.Game;
+import tba.Game.GameState;
 
 public class SaveMode extends GameMode {
     
@@ -16,6 +20,9 @@ public class SaveMode extends GameMode {
 
     public void interpret(String userInput)
     {
+        GameState state = game.getState();
+        state.setName(userInput);
+        state.setCreatedAt( LocalDateTime.now() );
         game.getState().save(userInput + ".dat");
         game.setMode( new NavigationMode(game) );
     }
