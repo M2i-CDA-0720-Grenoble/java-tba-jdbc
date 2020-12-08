@@ -10,7 +10,7 @@ import tba.Utils.ConsoleColor;
 public class GameState implements Serializable {
 
     public static final long serialVersionUID = 1L;
-    private static final String folderName = "savegame";
+    public static final String folderName = "savegame";
     
     private String name;
     private Date createdAt;

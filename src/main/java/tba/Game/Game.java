@@ -1,20 +1,15 @@
 package tba.Game;
 
-import java.sql.SQLException;
 import java.util.Scanner;
 
-import tba.Entity.Direction;
-import tba.Entity.Room;
-import tba.Entity.RoomTransition;
-import tba.Repository.DirectionRepository;
-import tba.Repository.RoomTransitionRepository;
-import tba.Utils.ConsoleColor;
+import tba.Game.GameMode.*;
 
 public class Game {
 
     private GameState state;
     private boolean isRunning;
     private Scanner scanner;
+    private GameMode mode;
 
     public Game()
     {
@@ -23,6 +18,8 @@ public class Game {
         scanner = new Scanner(System.in);
 
         isRunning = true;
+
+        mode = new NavigationMode( this );
     }
 
     public boolean isRunning()
@@ -35,18 +32,9 @@ public class Game {
         isRunning = false;
     }
 
-    public void update() throws SQLException
+    public void update()
     {
-        // Décrit la pièce dans laquelle se trouve le joueur actuellement
-        Room currentRoom = state.getCurrentRoom();
-        System.out.println(ConsoleColor.CYAN + "You are in the " + currentRoom.getName() + ".\n" + ConsoleColor.RESET);
-        System.out.println(ConsoleColor.CYAN + currentRoom.getDescription() + ConsoleColor.RESET);
-
-        RoomTransitionRepository transitionRepository = new RoomTransitionRepository();
-
-        for (RoomTransition transition: transitionRepository.findAllFromRoom(currentRoom)) {
-            System.out.println(ConsoleColor.GREEN + transition.getDirection().getName() + " is the " + transition.getToRoom().getName() + "." + ConsoleColor.RESET);
-        }
+        mode.display();
 
         // Demande à l'utilisateur de saisir une commande
         System.out.println("");
@@ -54,35 +42,33 @@ public class Game {
         String userInput = scanner.nextLine().trim().toLowerCase();
 
         if ("load".equals(userInput)) {
-            state = GameState.load("test.dat");
+            setMode( new LoadMode( this ) );
             return;
         }
         if ("save".equals(userInput)) {
-            state.save("test.dat");
+            setMode( new SaveMode( this ) );
             return;
         }
 
-        DirectionRepository directionRepository = new DirectionRepository();
+        mode.interpret(userInput);
+    }
 
-        // Cherche si la saisie de l'utilisateur correspond à une commande de direction
-        for (Direction direction: directionRepository.findAll()) {
-            // Si la direction saisie par l'utilisateur existe
-            if (userInput.equals(direction.getCommand())) {
+    public GameState getState()
+    {
+        return state;
+    }
 
-                // Récupère la transition qui part de la pièce actuelle dans la direction demandée
-                RoomTransition transition = transitionRepository.findByFromRoomAndDirection(currentRoom, direction);
+    public Game setMode(GameMode mode)
+    {
+        this.mode = mode;
 
-                // S'il n'existe pas de transition partant de la pièce actuelle dans la direction
-                if (transition == null) {
-                    System.out.println(ConsoleColor.YELLOW + "You cannot go into that direction!" + ConsoleColor.RESET);
-                // Sinon, modifie la pièce actuelle
-                } else {
-                    state.setCurrentRoom( transition.getToRoom() );
-                }
+        return this;
+    }
 
-                return;
+    public Game setState(GameState state)
+    {
+        this.state = state;
 
-            }
-        }
+        return this;
     }
 }
