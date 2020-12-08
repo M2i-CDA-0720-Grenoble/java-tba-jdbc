@@ -10,6 +10,7 @@ import tba.Utils.ConsoleColor;
 public class GameState implements Serializable {
 
     public static final long serialVersionUID = 1L;
+    private static final String folderName = "savegame";
     
     private String name;
     private Date createdAt;
@@ -24,7 +25,7 @@ public class GameState implements Serializable {
     public static GameState load(String filename)
     {
         try {
-            FileInputStream file = new FileInputStream(filename);
+            FileInputStream file = new FileInputStream(folderName + "\\" + filename);
             ObjectInputStream objectInputStream = new ObjectInputStream(file);
             GameState state = (GameState)objectInputStream.readObject();
             objectInputStream.close();
@@ -48,7 +49,7 @@ public class GameState implements Serializable {
     public void save(String filename)
     {
         try {
-            FileOutputStream file = new FileOutputStream(filename);
+            FileOutputStream file = new FileOutputStream(folderName + "\\" + filename);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(file);
             objectOutputStream.writeObject(this);
             objectOutputStream.flush();
