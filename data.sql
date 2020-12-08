@@ -34,3 +34,9 @@ VALUES
     (1, 6, 5),
     (6, 1, 6)
 ;
+
+DELETE FROM `item`;
+INSERT INTO `item` (`id`, `name`, `description`, `room_id`)
+VALUES
+    (1, "bed", "This is your bed.", 1)
+;
