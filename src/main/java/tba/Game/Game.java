@@ -53,6 +53,15 @@ public class Game {
         System.out.print("> ");
         String userInput = scanner.nextLine().trim().toLowerCase();
 
+        if ("load".equals(userInput)) {
+            state = GameState.load("test.dat");
+            return;
+        }
+        if ("save".equals(userInput)) {
+            state.save("test.dat");
+            return;
+        }
+
         DirectionRepository directionRepository = new DirectionRepository();
 
         // Cherche si la saisie de l'utilisateur correspond à une commande de direction

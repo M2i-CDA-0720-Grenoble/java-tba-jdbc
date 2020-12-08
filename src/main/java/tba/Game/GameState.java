@@ -1,11 +1,15 @@
 package tba.Game;
 
+import java.io.*;
 import java.util.Date;
 
 import tba.Entity.Room;
 import tba.Repository.RoomRepository;
+import tba.Utils.ConsoleColor;
 
-public class GameState {
+public class GameState implements Serializable {
+
+    public static final long serialVersionUID = 1L;
     
     private String name;
     private Date createdAt;
@@ -15,6 +19,49 @@ public class GameState {
     public GameState(int startRoomId)
     {
         currentRoomId = startRoomId;
+    }
+
+    public static GameState load(String filename)
+    {
+        try {
+            FileInputStream file = new FileInputStream(filename);
+            ObjectInputStream objectInputStream = new ObjectInputStream(file);
+            GameState state = (GameState)objectInputStream.readObject();
+            objectInputStream.close();
+            return state;
+        }
+        catch (FileNotFoundException exception) {
+            System.out.println(ConsoleColor.RED + "Save file not found." + ConsoleColor.RESET);
+            return null;
+        }
+        catch (IOException exception) {
+            System.out.println(ConsoleColor.RED + "Error while reading save file." + ConsoleColor.RESET);
+            exception.printStackTrace();
+            return null;
+        }
+        catch (ClassNotFoundException exception) {
+            System.out.println(ConsoleColor.RED + "GameState class deleted since save." + ConsoleColor.RESET);
+            return null;
+        }
+    }
+
+    public void save(String filename)
+    {
+        try {
+            FileOutputStream file = new FileOutputStream(filename);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(file);
+            objectOutputStream.writeObject(this);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+        }
+        catch (FileNotFoundException exception) {
+            System.out.println(ConsoleColor.RED + "Save file not found." + ConsoleColor.RESET);
+            return;
+        }
+        catch (IOException exception) {
+            System.out.println(ConsoleColor.RED + "Error while writing save file." + ConsoleColor.RESET);
+            return;
+        }
     }
 
     public String getName() {
