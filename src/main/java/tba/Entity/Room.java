@@ -1,6 +1,10 @@
 package tba.Entity;
 
 import java.util.HashMap;
+import java.util.List;
+
+import tba.Repository.ItemRepository;
+import tba.Repository.RoomTransitionRepository;
 
 
 public class Room extends Entity
@@ -55,6 +59,20 @@ public class Room extends Entity
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<RoomTransition> getTransitions()
+    {
+        RoomTransitionRepository transitionRepository = new RoomTransitionRepository();
+        return transitionRepository.findAllFromRoom(this);
+    }
+
+    public List<Item> getItems()
+    {
+        ItemRepository itemRepository = new ItemRepository();
+        return itemRepository.findByCriteria(new HashMap<String, String>() {{
+            put("room_id", Integer.toString(id) );
+        }});
     }
 
 }

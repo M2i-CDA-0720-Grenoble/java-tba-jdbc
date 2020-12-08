@@ -1,6 +1,7 @@
 package tba.Game.GameMode;
 
 import tba.Entity.Direction;
+import tba.Entity.Item;
 import tba.Entity.Room;
 import tba.Entity.RoomTransition;
 import tba.Game.Game;
@@ -27,11 +28,15 @@ public class NavigationMode extends GameMode {
         System.out.println(ConsoleColor.CYAN + "You are in the " + currentRoom.getName() + ".\n" + ConsoleColor.RESET);
         System.out.println(ConsoleColor.CYAN + currentRoom.getDescription() + ConsoleColor.RESET);
 
-        RoomTransitionRepository transitionRepository = new RoomTransitionRepository();
 
-        for (RoomTransition transition: transitionRepository.findAllFromRoom(currentRoom)) {
+        for (RoomTransition transition: currentRoom.getTransitions()) {
             System.out.println(ConsoleColor.GREEN + transition.getDirection().getName() + " is the " + transition.getToRoom().getName() + "." + ConsoleColor.RESET);
-        }        
+        }
+
+        System.out.print("Available items: ");
+        for (Item item: currentRoom.getItems()) {
+            System.out.print(item.getName());
+        }
     }
 
     public void interpret(String userInput)

@@ -5,6 +5,7 @@ USE `java_tba`;
 DROP TABLE IF EXISTS `room_transition`;
 DROP TABLE IF EXISTS `room`;
 DROP TABLE IF EXISTS `direction`;
+DROP TABLE IF EXISTS `item`;
 
 CREATE TABLE `room` (
     `id` INT(11) UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -27,4 +28,13 @@ CREATE TABLE `room_transition` (
     FOREIGN KEY (`from_room_id`) REFERENCES `room`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`to_room_id`) REFERENCES `room`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`direction_id`) REFERENCES `direction`(`id`) ON DELETE CASCADE
+);
+
+CREATE TABLE `item` (
+    `id` INT(11) UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255),
+    `description` VARCHAR(255),
+    `room_id` INT(11) UNSIGNED NOT NULL,
+
+    FOREIGN KEY (`room_id`) REFERENCES `room`(`id`) ON DELETE CASCADE
 );
